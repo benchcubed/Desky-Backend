@@ -1,0 +1,89 @@
+service: my-auth-backend
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-2
+  stage: ${opt:stage, 'dev'}
+  environment:
+    USER_JWT_SECRET_NAME: ${self:custom.jwtSecretName}
+    USERS_TABLE_NAME: ${self:custom.usersTableName}
+    VERIFICATION_EMAIL_FROM: "ben.churchill98@gmail.com"
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:UpdateItem
+          Resource: "*"
+        - Effect: "Allow"
+          Action:
+            - secretsmanager:GetSecretValue
+          Resource:
+            - arn:aws:secretsmanager:${self:provider.region}:*:secret:${self:custom.jwtSecretName}-*
+        - Effect: "Allow"
+          Action:
+            - secretsmanager:GetSecretValue
+            - secretsmanager:CreateSecret
+            - secretsmanager:PutSecretValue
+            - secretsmanager:DescribeSecret
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - ses:SendEmail
+            - ses:SendRawEmail
+          Resource: "*"
+
+custom:
+  usersTableName: ${self:service}-users-${self:provider.stage}
+  jwtSecretName: ${self:service}-jwt-${self:provider.stage}
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.usersTableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: EmailIndex
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+functions:
+  register:
+    handler: src/handlers/register.handler
+    events:
+      - httpApi:
+          path: /register
+          method: post
+
+  login:
+    handler: src/handlers/login.handler
+    events:
+      - httpApi:
+          path: /login
+          method: post
+  verify-email:
+    handler: src/handlers/verifyEmail.handler
+    events:
+      - httpApi:
+          path: /verifyEmail.handler
+          method: post
+
+package:
+  individually: true
