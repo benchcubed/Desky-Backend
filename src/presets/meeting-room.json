@@ -1,0 +1,19 @@
+{
+  "title": "Meeting Room Preset",
+  "description": "A 3x5 meeting room with a central table and 6 chairs.",
+  "officeCorner": { "x": 0, "y": 0, "z": 0 },
+  "blocks": [
+    { "type": "minecraft:oak_planks", "position": { "x": 1, "y": 1, "z": 2 }, "properties": { "hardness": 2.0 } },
+    { "type": "minecraft:oak_planks", "position": { "x": 2, "y": 1, "z": 2 }, "properties": { "hardness": 2.0 } },
+    { "type": "minecraft:oak_planks", "position": { "x": 1, "y": 1, "z": 3 }, "properties": { "hardness": 2.0 } },
+    { "type": "minecraft:oak_planks", "position": { "x": 2, "y": 1, "z": 3 }, "properties": { "hardness": 2.0 } },
+    { "type": "minecraft:oak_stairs", "position": { "x": 0, "y": 1, "z": 2 }, "properties": { "facing": "east" } },
+    { "type": "minecraft:oak_stairs", "position": { "x": 0, "y": 1, "z": 3 }, "properties": { "facing": "east" } },
+    { "type": "minecraft:oak_stairs", "position": { "x": 3, "y": 1, "z": 2 }, "properties": { "facing": "west" } },
+    { "type": "minecraft:oak_stairs", "position": { "x": 3, "y": 1, "z": 3 }, "properties": { "facing": "west" } },
+    { "type": "minecraft:oak_stairs", "position": { "x": 1, "y": 1, "z": 1 }, "properties": { "facing": "south" } },
+    { "type": "minecraft:oak_stairs", "position": { "x": 2, "y": 1, "z": 1 }, "properties": { "facing": "south" } },
+    { "type": "minecraft:oak_stairs", "position": { "x": 1, "y": 1, "z": 4 }, "properties": { "facing": "north" } },
+    { "type": "minecraft:oak_stairs", "position": { "x": 2, "y": 1, "z": 4 }, "properties": { "facing": "north" } }
+  ]
+}

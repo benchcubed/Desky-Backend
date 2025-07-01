@@ -1,0 +1,1 @@
+type AssertionResult = { success: true } | { success: false; error: Error };

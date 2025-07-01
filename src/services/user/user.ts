@@ -18,7 +18,7 @@ export const fetchUserById = async (userId: string): Promise<User | null> => {
     return null;
 };
 
-export const fetchUserByEmail = async (email: string): Promise<User | null> => {
+export const fetchUserByEmail = async (email: string, requireUserVerification: boolean = true): Promise<User | null> => {
     const params = {
         TableName: USERS_TABLE,
         IndexName: "EmailIndex",
@@ -30,7 +30,13 @@ export const fetchUserByEmail = async (email: string): Promise<User | null> => {
 
     const result = await ddbDocClient.send(new QueryCommand(params));
     if (result.Items && result.Items.length > 0) {
-        return result.Items[0] as User;
+        const user = result.Items[0] as User;
+        if (!requireUserVerification) {
+            return user;
+        }
+        if (user.emailVerified) {
+            return user;
+        }
     }
     return null;
 };

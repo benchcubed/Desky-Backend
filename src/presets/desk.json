@@ -1,0 +1,22 @@
+{
+  "title": "Desk Preset",
+  "description": "A simple 1x4 desk with legs, drawer, and accessories.",
+  "officeCorner": { "x": 0, "y": 0, "z": 0 },
+  "blocks": [
+    { "type": "minecraft:oak_planks", "position": { "x": 0, "y": 2, "z": 0 }, "properties": { "hardness": 2.0 } },
+    { "type": "minecraft:oak_planks", "position": { "x": 1, "y": 2, "z": 0 }, "properties": { "hardness": 2.0 } },
+    { "type": "minecraft:oak_planks", "position": { "x": 2, "y": 2, "z": 0 }, "properties": { "hardness": 2.0 } },
+    { "type": "minecraft:oak_planks", "position": { "x": 3, "y": 2, "z": 0 }, "properties": { "hardness": 2.0 } },
+    { "type": "minecraft:polished_stone_bricks", "position": { "x": 0, "y": 0, "z": 0 }, "properties": { "hardness": 1.8 } },
+    { "type": "minecraft:polished_stone_bricks", "position": { "x": 0, "y": 1, "z": 0 }, "properties": { "hardness": 1.8 } },
+    { "type": "minecraft:polished_stone_bricks", "position": { "x": 3, "y": 0, "z": 0 }, "properties": { "hardness": 1.8 } },
+    { "type": "minecraft:polished_stone_bricks", "position": { "x": 3, "y": 1, "z": 0 }, "properties": { "hardness": 1.8 } },
+    { "type": "minecraft:oak_trapdoor", "position": { "x": 2, "y": 1, "z": 0 }, "properties": { "hardness": 1.0, "open": false } },
+    { "type": "minecraft:lantern", "position": { "x": 0, "y": 3, "z": 0 }, "properties": { "lightLevel": 15 } },
+    { "type": "minecraft:lantern", "position": { "x": 3, "y": 3, "z": 0 }, "properties": { "lightLevel": 15 } },
+    { "type": "minecraft:bookshelf", "position": { "x": 0, "y": 2, "z": 1 }, "properties": { "hardness": 1.5 } },
+    { "type": "minecraft:bookshelf", "position": { "x": 1, "y": 2, "z": 1 }, "properties": { "hardness": 1.5 } },
+    { "type": "minecraft:bookshelf", "position": { "x": 2, "y": 2, "z": 1 }, "properties": { "hardness": 1.5 } },
+    { "type": "minecraft:bookshelf", "position": { "x": 3, "y": 2, "z": 1 }, "properties": { "hardness": 1.5 } }
+  ]
+}

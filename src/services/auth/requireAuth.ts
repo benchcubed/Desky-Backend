@@ -5,14 +5,14 @@ import { fetchUserByEmail } from "../user/user";
 import { HttpError } from "../../utils/errors";
 
 type TokenPayload = {
-    userId: string;
+    id: string;
     iat?: number;
     exp?: number;
 };
 
 export const requireAuth = async (
     event: APIGatewayProxyEvent,
-    requireVerifiedAccount = true
+    requireActiveUser = false,
 ): Promise<TokenPayload> => {
     const authHeader = event.headers.Authorization || event.headers.authorization;
     if (!authHeader?.startsWith("Bearer ")) {
@@ -30,15 +30,19 @@ export const requireAuth = async (
         throw new HttpError(401, "Invalid or expired token");
     }
 
-    if (!payload?.userId) {
+    console.log('REQUIRED AUTH - Token payload:', payload);
+
+    if (!payload?.id) {
         throw new HttpError(401, "Invalid token payload");
     }
 
-    if (!requireVerifiedAccount) {
+    if (!requireActiveUser) {
         return payload;
     }
 
-    const user = await fetchUserByEmail(payload.userId);
+    console.log('REQUIRED AUTH - Verifying user:', payload.id);
+
+    const user = await fetchUserByEmail(payload.id);
     if (!user) {
         throw new HttpError(404, "User not found");
     }
@@ -46,6 +50,8 @@ export const requireAuth = async (
     if (!user.emailVerified) {
         throw new HttpError(403, "User email not verified");
     }
+
+    console.log('REQUIRED AUTH - User found:', user.email);
 
     return payload;
 };

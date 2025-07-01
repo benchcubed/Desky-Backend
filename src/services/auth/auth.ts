@@ -15,7 +15,7 @@ export const register = async (data: RegisterData) => {
 
     const { email, password, firstName, surname, dateOfBirth } = result.data;
 
-    const existing = await fetchUserByEmail(email);
+    const existing = await fetchUserByEmail(email, false);
     if (existing) throw new Error('Email already in use');
 
     const emailVerificationToken = uuid();

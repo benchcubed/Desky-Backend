@@ -2,13 +2,16 @@ service: my-auth-backend
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs20.x
   region: eu-west-2
   stage: ${opt:stage, 'dev'}
   environment:
     USER_JWT_SECRET_NAME: ${self:custom.jwtSecretName}
     USERS_TABLE_NAME: ${self:custom.usersTableName}
+    OFFICES_TABLE_NAME: ${self:custom.officesTableName}
+    OFFICE_MEMBERSHIPS_TABLE_NAME: ${self:custom.officeMembershipsTableName}
     VERIFICATION_EMAIL_FROM: "ben.churchill98@gmail.com"
+    OFFICES_S3_BUCKET_NAME: ${self:custom.officesS3BucketName}
   iam:
     role:
       statements:
@@ -18,7 +21,11 @@ provider:
             - dynamodb:PutItem
             - dynamodb:Query
             - dynamodb:UpdateItem
-          Resource: "*"
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.usersTableName}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.usersTableName}/index/EmailIndex
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.officesTableName}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.officeMembershipsTableName}
         - Effect: "Allow"
           Action:
             - secretsmanager:GetSecretValue
@@ -35,11 +42,24 @@ provider:
           Action:
             - ses:SendEmail
             - ses:SendRawEmail
-          Resource: "*"
+          Resource:
+            - arn:aws:ses:${self:provider.region}:*:identity/${self:provider.environment.VERIFICATION_EMAIL_FROM}
+        - Effect: "Allow"
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:ListBucket
+            - s3:CreateBucket
+          Resource:
+            - arn:aws:s3:::${self:custom.officesS3BucketName}
+            - arn:aws:s3:::${self:custom.officesS3BucketName}/*
 
 custom:
   usersTableName: ${self:service}-users-${self:provider.stage}
   jwtSecretName: ${self:service}-jwt-${self:provider.stage}
+  officesTableName: ${self:service}-offices-${self:provider.stage}
+  officeMembershipsTableName: ${self:service}-office-memberships-${self:provider.stage}
+  officesS3BucketName: ${self:service}-offices-${self:provider.stage}
 
 resources:
   Resources:
@@ -63,27 +83,66 @@ resources:
             Projection:
               ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
+    OfficesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.officesTableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+    OfficeMembershipsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.officeMembershipsTableName}
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+    OfficesS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.officesS3BucketName}
+        VersioningConfiguration:
+          Status: Enabled
+        LifecycleConfiguration:
+          Rules:
+            - Status: Enabled
+              ExpirationInDays: 365
 
 functions:
   register:
-    handler: src/handlers/register.handler
+    handler: src/handlers/auth/register.handler
     events:
       - httpApi:
           path: /register
           method: post
-
   login:
-    handler: src/handlers/login.handler
+    handler: src/handlers/auth/login.handler
     events:
       - httpApi:
           path: /login
           method: post
   verify-email:
-    handler: src/handlers/verifyEmail.handler
+    handler: src/handlers/auth/verifyEmail.handler
     events:
       - httpApi:
-          path: /verifyEmail.handler
+          path: /verifyEmail
           method: post
-
-package:
-  individually: true
+  create-office:
+    handler: src/handlers/office/createOffice.handler
+    events:
+      - httpApi:
+          path: /createOffice
+          method: post
