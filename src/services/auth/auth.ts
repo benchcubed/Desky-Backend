@@ -33,7 +33,7 @@ export const register = async (data: RegisterData) => {
     });
 
     return {
-        userId: newUser.id,
+        userId: newUser.userId,
         emailVerificationToken,
     };
 };
@@ -58,6 +58,6 @@ export const login = async (data: LoginData) => {
     const isMatch = await bcrypt.compare(validatedPassword, user.passwordHash);
     if (!isMatch) throw new Error('Invalid password');
 
-    const token = jwt.sign({ id: user.id, permissions: user.permissions }, jwtSecret, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.userId, permissions: user.permissions }, jwtSecret, { expiresIn: '1h' });
     return token
 };

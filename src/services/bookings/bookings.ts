@@ -23,13 +23,13 @@ export const isElementAvailable = async (
 ): Promise<boolean> => {
     const result = await ddbDocClient.send(new QueryCommand({
         TableName: OFFICE_BOOKINGS_TABLE_NAME,
-        KeyConditionExpression: "elementId = :elementId AND startTime < :desiredEnd",
+        KeyConditionExpression: "bookingId = :elementId AND startTime < :desiredEnd",
         FilterExpression: "endTime > :desiredStart AND #status = :confirmed",
         ExpressionAttributeNames: {
             "#status": "status"
         },
         ExpressionAttributeValues: {
-            ":elementId": { S: elementId },
+            ":bookingId": { S: elementId },
             ":desiredStart": { N: desiredStart.toString() },
             ":desiredEnd": { N: desiredEnd.toString() },
             ":confirmed": { S: "CONFIRMED" }
@@ -47,7 +47,7 @@ export const createBooking = async (
     if (isMultipleOfXMinutes(officeBooking.startTime, 15) === false || isMultipleOfXMinutes(officeBooking.endTime, 15) === false) {
         return { success: false, message: "Start and end times must be multiples of 15 minutes." };
     }
-    const available = await isElementAvailable(officeBooking.elementId, officeBooking.startTime, officeBooking.endTime);
+    const available = await isElementAvailable(officeBooking.bookingId, officeBooking.startTime, officeBooking.endTime);
     if (!available) {
         return { success: false, message: "Element is already booked for this time range." };
     }
@@ -68,7 +68,7 @@ export const ammendBooking = async (
 ): Promise<{ success: boolean; message: string }> => {
     const { startTime, endTime } = updates;
     if (startTime && endTime) {
-        const available = await isElementAvailable(updates.elementId || "", startTime, endTime);
+        const available = await isElementAvailable(updates.bookingId || "", startTime, endTime);
         if (!available) {
             return { success: false, message: "Element is already booked for this time range." };
         }

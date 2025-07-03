@@ -34,6 +34,6 @@ export const createUserSchema = z.object({
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 
 export type User = CreateUserInput & {
-    id: string;
+    userId: string;
     createdAt: number; // timestamp
 };

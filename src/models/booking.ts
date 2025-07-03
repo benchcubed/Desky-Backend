@@ -6,7 +6,6 @@ const officeBookingSchema = z.object({
     officeId: z.string().uuid(),
     bookingName: z.string().min(1).max(100),
     description: z.string().min(1).max(500).optional().default(""),
-    elementId: z.string().uuid(),
     userId: z.string().uuid(),
     startTime: z.number(), // Unix timestamp (ms)
     endTime: z.number(),

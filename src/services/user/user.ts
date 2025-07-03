@@ -46,7 +46,7 @@ export const createUser = async (data: CreateUserInput): Promise<User> => {
     const userId = uuid();
 
     const item: User = {
-        id: userId,
+        userId,
         createdAt: new Date().getTime(),
         ...parsedData,
     };
