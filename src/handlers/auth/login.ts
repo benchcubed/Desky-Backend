@@ -3,13 +3,6 @@ import { loginSchema, validateLogin } from '../../utils/validation';
 import { login } from '../../services/auth/auth';
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent) => {
-    if (!event.body) {
-        console.log('No body in event');
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: 'Request body is required' }),
-        };
-    }
     const body = loginSchema.safeParse(event.body || '{}');
     if (!body.success) {
         return {

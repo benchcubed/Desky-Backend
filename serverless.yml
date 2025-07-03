@@ -12,6 +12,8 @@ provider:
     OFFICE_MEMBERSHIPS_TABLE_NAME: ${self:custom.officeMembershipsTableName}
     VERIFICATION_EMAIL_FROM: "ben.churchill98@gmail.com"
     OFFICES_S3_BUCKET_NAME: ${self:custom.officesS3BucketName}
+    OFFICE_BOOKINGS_ATENDEES_TABLE_NAME: ${self:custom.officeBookingsAttendeesTableName}
+    OFFICE_BOOKINGS_TABLE_NAME: ${self:custom.officeBookingsTableName}
   iam:
     role:
       statements:
@@ -23,7 +25,6 @@ provider:
             - dynamodb:UpdateItem
           Resource:
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.usersTableName}
-            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.usersTableName}/index/EmailIndex
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.officesTableName}
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.officeMembershipsTableName}
         - Effect: "Allow"
@@ -57,9 +58,11 @@ provider:
 custom:
   usersTableName: ${self:service}-users-${self:provider.stage}
   jwtSecretName: ${self:service}-jwt-${self:provider.stage}
-  officesTableName: ${self:service}-offices-${self:provider.stage}
+  officesTableName: ${self:service}-offices-${self:provider.stage}s
   officeMembershipsTableName: ${self:service}-office-memberships-${self:provider.stage}
   officesS3BucketName: ${self:service}-offices-${self:provider.stage}
+  officeBookingsAttendeesTableName: ${self:service}-office-bookings-attendees-${self:provider.stage}
+  officeBookingsTableName: ${self:service}-office-bookings-${self:provider.stage}
 
 resources:
   Resources:
@@ -98,6 +101,36 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:custom.officeMembershipsTableName}
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+    OfficeBookingsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.officeBookingsTableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: officeId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: officeId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+    OfficeBookingsAttendeesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.officeBookingsAttendeesTableName}
         AttributeDefinitions:
           - AttributeName: pk
             AttributeType: S

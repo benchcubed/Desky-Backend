@@ -3,6 +3,7 @@ import { z } from "zod"
 const officeElementTypesSchema = z.enum(['DESK', 'WALL', 'CHAIR', 'PLANT'])
 
 const officeElementSchema = z.object({
+    isBookable: z.boolean().optional().default(false),
     position: z.object({
         x: z.number(),
         y: z.number(),

@@ -85,13 +85,13 @@ export const removeMemberFromOffice = async (data: RemoveOfficeMemberInput): Pro
 
     const { officeId, userIdToRemove, removedByUserId, override = false } = parsed.data;
 
-    const assertionResponses = await Promise.all([
+    const assertionResponses = await Promise.all<AssertionResult>([
         assertOfficeExists(officeId),
         assertUserHasRole(officeId, removedByUserId, ['ADMIN', 'OWNER'], override),
         assertUserIsMember(officeId, userIdToRemove),
     ]);
 
-    if (!assertionResponses.every(res => res.success)) {
+    if (!assertionResponses.every((res: AssertionResult) => res.success)) {
         const errors = assertionResponses.filter(res => !res.success).map(res => res.error?.message).join(", ");
         throw new Error(`Failed to remove member: ${errors}`);
     }
